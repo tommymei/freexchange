@@ -26,7 +26,6 @@ public class EnhancedUser extends User {
      *
      * @param username the username
      * @param email the email
-     * @param displayName the display name
      * @param password the password
      * @param salt the salt
      * @param enabled enabled
