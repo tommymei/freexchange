@@ -34,11 +34,16 @@
    Zipcode: ${mediaObj.zipcode}<br>
    Last Modified: ${mediaObj.modification}<br>
    Created At: ${mediaObj.creation}<br>
-   <c:if test="${editable}">	
-		<c:if test="${principleUsername == mediaObj.username}">
-			<a href="/item/delete/${mediaObj.webSafeKey}">DELETE</a><br>
+		<c:if test="${mediaObj.blob != null}">
+			<iframe width="300" height="250" seamless="seamless" scrolling="no"
+				src="/item/image/${mediaObj.blob.keyString}"></iframe>
 		</c:if>
-	</c:if>	
+		<c:if test="${editable}">
+			<c:if test="${principleUsername == mediaObj.username}">
+				<a href="/item/delete/${mediaObj.webSafeKey}">DELETE</a>
+				<br>
+			</c:if>
+		</c:if>
 		<hr>
 	</c:forEach>
 </body>

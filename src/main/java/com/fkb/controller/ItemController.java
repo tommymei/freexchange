@@ -1,10 +1,12 @@
 package com.fkb.controller;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,6 +154,14 @@ public class ItemController {
 		this.mediaObjectService.deleteMediaObject(
 				KeyFactory.stringToKey(websafeKey), username);
 		return "redirect:/item/list/" + username;
+	}
+
+	@RequestMapping(value = "/image/{blobKeyString}", method = RequestMethod.GET)
+	public final void image(
+			@PathVariable("blobKeyString") String blobKeyString,
+			HttpServletResponse response) throws IOException {
+		BlobKey blobKey = new BlobKey(blobKeyString);
+		blobstoreService.serve(blobKey, response);
 	}
 
 }
