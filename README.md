@@ -30,6 +30,7 @@ Summary of features imported
 * Task Queue Support
 * URL Rewrite Integration
 
+
 ## Features added by me
 
 * Appengine's Blobstore service to store media files 
@@ -40,3 +41,11 @@ TODOS
 
 
 
+## Build/Deploy
+* Run `mvn clean package -P local` to create a new local build
+* Run `mvn gae:run -P local` to run locally
+* Run `mvn gae:stop -P local` to stop the local jetty server
+* Run `mvn clean package -P dev` to create a new dev build
+* Run `mvn gae:deploy -P dev` to deploy to your dev app engine app
+* Run `mvn clean package -P prod` to create a new prod build
+* Run `mvn gae:deploy -P prod` to deploy to your prod app engine app

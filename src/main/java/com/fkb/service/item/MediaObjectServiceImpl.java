@@ -5,7 +5,7 @@ import java.util.List;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import org.datanucleus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.fkb.model.item.MediaObject;
 import com.fkb.model.item.PMF;
