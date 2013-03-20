@@ -6,7 +6,7 @@
 
 <html>
 <head>
-<title><spring:message code="create_item.title" /></title>
+<title><spring:message code="post_item.title" /></title>
 </head>
 <body>
 	<sec:authorize access="isAnonymous()">
@@ -32,7 +32,7 @@
 			</p>
 			<p>
 				<form:label for="title" path="title" cssErrorClass="error">
-					<spring:message code="create_item.label.title" />
+					<spring:message code="post_item.label.title" />
 				</form:label>
 				<form:input path="title" />
 				<form:errors path="title" cssClass="error" />
@@ -40,14 +40,14 @@
 			<p>
 				<form:label for="description" path="description"
 					cssErrorClass="error">
-					<spring:message code="create_item.label.description" />
+					<spring:message code="post_item.label.description" />
 				</form:label>
 				<form:textarea path="description" />
 				<form:errors path="description" cssClass="error" />
 			</p>
 			<p>
 				<form:label for="zipcode" path="zipcode" cssErrorClass="error">
-					<spring:message code="create_item.label.zipcode" />
+					<spring:message code="post_item.label.zipcode" />
 				</form:label>
 				<form:input path="zipcode" />
 				<form:errors path="zipcode" cssClass="error" />
@@ -55,7 +55,7 @@
 
 			<p>
 				<form:label for="fileData" path="fileData" cssErrorClass="error">
-					<spring:message code="create_item.label.fileData" />
+					<spring:message code="post_item.label.fileData" />
 				</form:label>
 				<form:input path="fileData" type="file" />
 			</p>
@@ -67,15 +67,5 @@
 			</p>
 		</fieldset>
 	</form:form>
-
-
-	<p>
-		Server:
-		<%=application.getServerInfo()%><br /> Servlet Specification:
-		<%=application.getMajorVersion()%>.<%=application.getMinorVersion()%><br />
-		JSP Version:
-		<%=JspFactory.getDefaultFactory().getEngineInfo()
-					.getSpecificationVersion()%>
-	</p>
 </body>
 </html>

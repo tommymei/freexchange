@@ -1,29 +1,33 @@
 package com.fkb.controller;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.fkb.controller.util.BlobInfoUtil;
 import com.fkb.form.Item;
 import com.fkb.model.item.MediaObject;
-import com.fkb.model.item.PMF;
-import com.google.appengine.api.blobstore.BlobInfo;
-import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.fkb.service.item.MediaObjectService;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * The item controller.
@@ -41,6 +45,9 @@ public class ItemController {
 	private BlobstoreService blobstoreService = BlobstoreServiceFactory
 			.getBlobstoreService();
 
+	@Autowired
+	private MediaObjectService mediaObjectService;
+
 	/**
 	 * Display the create item form.
 	 * 
@@ -48,12 +55,12 @@ public class ItemController {
 	 *            the model map
 	 * @return the view name
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public final String create(final ModelMap model) {
+	@RequestMapping(value = "/post", method = RequestMethod.GET)
+	public final String displayCreateItemForm(final ModelMap model) {
 		model.addAttribute(ITEM, new Item());
 		String uploadUrl = blobstoreService.createUploadUrl("/app/item/post");
 		model.addAttribute("uploadUrl", uploadUrl);
-		return "createItem";
+		return "postItem";
 	}
 
 	/**
@@ -68,47 +75,83 @@ public class ItemController {
 	 * @return the path
 	 */
 	@RequestMapping(value = "/post", method = RequestMethod.POST)
-	public final String submit(@ModelAttribute(ITEM) @Valid final Item item,
+	public final String submitCreateItemForm(
+			@ModelAttribute(ITEM) @Valid final Item item,
 			final BindingResult binding, final HttpServletRequest request) {
+
+		Authentication authentication = SecurityContextHolder.getContext()
+				.getAuthentication();
+		String username = ((UserDetails) authentication.getPrincipal())
+				.getUsername();
 
 		if (binding.hasErrors()) {
 			return "error";
 		}
 
-		// TODO: create a service for this so it can be swapped out
-		String contentType = null;
-		long size = 0;
-		String fileName = "";
-		Date creation = new Date();
-		BlobKey blobKey = null;
-
 		Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
-		if (!blobs.keySet().isEmpty()) {
-			Iterator<String> names = blobs.keySet().iterator();
-			String blobName = names.next();
-			List<BlobKey> blobKeys = blobs.get(blobName);
-			blobKey = blobKeys.get(0);
-
-			BlobInfoFactory blobInfoFactory = new BlobInfoFactory();
-			BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
-
-			contentType = blobInfo.getContentType();
-			size = blobInfo.getSize();
-			fileName = blobInfo.getFilename();
-		}
+		BlobInfoUtil bi = new BlobInfoUtil(blobs);
 
 		try {
-			MediaObject mediaObj = new MediaObject("tommy4", blobKey,
-					contentType, fileName, size, item.getTitle(),
-					item.getDescription(), item.getZipcode(), item.getType(),
-					creation, creation);
-			PMF.get().getPersistenceManager().makePersistent(mediaObj);
-			return "redirect:/";
+			Date now = new Date();
+			MediaObject mediaObj = new MediaObject(username, bi.getBlobKey(),
+					bi.getContentType(), bi.getFileName(), bi.getSize(),
+					item.getTitle(), item.getDescription(), item.getZipcode(),
+					item.getType(), now, now);
+			this.mediaObjectService.saveMediaQbject(mediaObj);
+			return "redirect:/item/list/" + username;
 		} catch (Exception e) {
-			blobstoreService.delete(blobKey);
+			if (bi.getBlobKey() != null) {
+				blobstoreService.delete(bi.getBlobKey());
+			}
 			return "error";
 		}
+	}
 
+	/**
+	 * List items posted by the user
+	 * 
+	 * @param model
+	 *            the model map
+	 * @return the path
+	 */
+	@RequestMapping(value = "/list/{username}", method = RequestMethod.GET)
+	public final String listItems(@PathVariable("username") String username,
+			final ModelMap model) {
+		model.addAttribute("itemList",
+				this.mediaObjectService.loadMediaObjectsByUsername(username));
+		model.addAttribute("editable", true);
+		return "listItems";
+	}
+
+	/**
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/listall", method = RequestMethod.GET)
+	public final String listAllItems(final ModelMap model) {
+		model.addAttribute("itemList",
+				this.mediaObjectService.loadMediaObjectsByUsername(""));
+		model.addAttribute("editable", false);
+		return "listItems";
+	}
+
+	/**
+	 * 
+	 * @param username
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/delete/{websafeKey}", method = RequestMethod.GET)
+	public final String delete(@PathVariable("websafeKey") String websafeKey) {
+		Authentication authentication = SecurityContextHolder.getContext()
+				.getAuthentication();
+		String username = ((UserDetails) authentication.getPrincipal())
+				.getUsername();
+
+		this.mediaObjectService.deleteMediaObject(
+				KeyFactory.stringToKey(websafeKey), username);
+		return "redirect:/item/list/" + username;
 	}
 
 }

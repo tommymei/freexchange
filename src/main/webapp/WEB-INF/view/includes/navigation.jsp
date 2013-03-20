@@ -6,7 +6,13 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <sec:authorize access="isAuthenticated()">
 	<p>
-		<spring:message code="header.info" />
-		<sec:authentication property="principal.username" />
+	<a
+		href="/item/list/<sec:authentication property="principal.username" />">My
+		Items</a>
+	</p>
+	<p>
+		<a href="/item/post">Post Item</a>
 	</p>
 </sec:authorize>
+<a href="/item/listall">All Items</a>
+<p>

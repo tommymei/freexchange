@@ -19,6 +19,9 @@
         <div id="javascript" >
             <%@ include file="/WEB-INF/view/includes/script.jsp" %>
         </div>
+        <div id="navigation">
+            <%@ include file="/WEB-INF/view/includes/navigation.jsp" %>
+        </div>
         <div id="content">
             <decorator:body />
         </div>

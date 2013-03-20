@@ -9,6 +9,8 @@
         http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
     <context:annotation-config />
+    
+    
     <context:component-scan base-package="com.fkb">
         <context:exclude-filter type="aspectj" expression="com.fkb.controller.*"/>
     </context:component-scan>

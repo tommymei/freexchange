@@ -16,6 +16,9 @@
         <intercept-url pattern="/task/**" access="hasRole('ROLE_ANONYMOUS')" requires-channel="${application.secureChannel}" />
         <intercept-url pattern="/login/**" access="hasRole('ROLE_ANONYMOUS')" requires-channel="${application.secureChannel}" />
         <intercept-url pattern="/error/**" access="hasRole('ROLE_ANONYMOUS')" requires-channel="http" />
+        <intercept-url pattern="/item/list/post" access="hasRole('ROLE_USER')" requires-channel="http" />
+        <intercept-url pattern="/item/list/**" access="hasRole('ROLE_ANONYMOUS')" requires-channel="http" />
+         <intercept-url pattern="/item/listall" access="hasRole('ROLE_ANONYMOUS')" requires-channel="http" />
         <intercept-url pattern="/register/**" access="hasRole('ROLE_ANONYMOUS')" requires-channel="${application.secureChannel}" />
         <intercept-url pattern="/" access="hasRole('ROLE_ANONYMOUS')" requires-channel="http" />
         <intercept-url pattern="/**" access="hasRole('ROLE_USER')" requires-channel="http" />

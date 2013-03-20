@@ -26,8 +26,9 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable="true")
 public class MediaObject {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -35,18 +36,6 @@ public class MediaObject {
 
 	@Persistent
 	private String username;
-
-	@Persistent
-	private BlobKey blob;
-
-	@Persistent
-	private String contentType;
-
-	@Persistent
-	private String filename;
-
-	@Persistent
-	private long size;
 
 	@Persistent
 	private String title;
@@ -65,6 +54,20 @@ public class MediaObject {
 
 	@Persistent
 	private Date modification;
+
+	// optional
+
+	@Persistent
+	private BlobKey blob;
+
+	@Persistent
+	private String contentType;
+
+	@Persistent
+	private String filename;
+
+	@Persistent
+	private long size;
 
 	private static final List<String> IMAGE_TYPES = Arrays.asList("image/png",
 			"image/jpeg", "image/tiff", "image/gif", "image/bmp");
@@ -87,11 +90,19 @@ public class MediaObject {
 
 	}
 
+	public MediaObject(String username, String title, String description,
+			int zipcode, String type, Date creationTime, Date modificationTime) {
+		this(username, null, null, null, 0, title, description, zipcode, type,
+				creationTime, modificationTime);
+	}
+
 	public Key getKey() {
 		return key;
 	}
-
 	
+	public String getWebSafeKey() {
+		return KeyFactory.keyToString(this.key);
+	}
 
 	public String getDescription() {
 		return description;
@@ -124,9 +135,13 @@ public class MediaObject {
 	public Date getCreation() {
 		return creation;
 	}
-	
+
 	public Date getModification() {
 		return modification;
+	}
+
+	public BlobKey getBlob() {
+		return blob;
 	}
 
 	public static List<String> getImageTypes() {
@@ -138,16 +153,6 @@ public class MediaObject {
 			return "text/plain";
 		}
 		return contentType;
-	}
-
-	public String getURLPath() {
-		String key = blob.getKeyString();
-		return "/resource?key=" + key;
-	}
-
-	public String getDisplayURL() {
-		String key = blob.getKeyString();
-		return "/display?key=" + key;
 	}
 
 	public boolean isImage() {

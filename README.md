@@ -30,5 +30,13 @@ Summary of features imported
 * Task Queue Support
 * URL Rewrite Integration
 
-## Features added by me for FreeXchange.org
+## Features added by me
+
+* Appengine's Blobstore service to store media files 
+* JDO 2.3 annotations to work with Appengine's schemaless object datastore
+
+TODOS
+- Used Bootstrap to skeleton UI screens (http://twitter.github.com/bootstrap/)
+
+
 
